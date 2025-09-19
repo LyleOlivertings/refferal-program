@@ -6,7 +6,7 @@ export function Sidebar() {
   return (
     <aside className="fixed left-0 top-0 hidden h-full w-64 flex-col border-r bg-gray-800 text-white lg:flex">
       <div className="flex h-16 items-center justify-center border-b border-gray-700">
-        <h1 className="text-xl font-bold">YourApp</h1>
+        <h1 className="text-xl font-bold">TnT Infrastructure CMS</h1>
       </div>
       <div className="flex-1 overflow-y-auto p-4">
         <AdminNavLinks />

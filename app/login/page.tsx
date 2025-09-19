@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { FiLogIn } from "react-icons/fi";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -19,94 +18,121 @@ export default function LoginPage() {
 
     try {
       const result = await signIn("credentials", {
-        redirect: false, // We handle the redirect manually
         email,
         password,
       });
 
       if (result?.error) {
-        setError("Invalid email or password. Please try again.");
-      } else if (result?.ok) {
-        // Successful login, redirect to the main dashboard.
-        // The middleware will handle routing to the correct place if an agent logs in.
-        router.replace("/admin/dashboard");
+         setError("Invalid email or password. Please try again.");
       }
-    } catch (error) {
-      console.error("Login failed:", error);
-      setError("An unexpected error occurred.");
+    } catch (error: any) {
+      if (error.type === 'CredentialsSignin') {
+        setError("Invalid email or password. Please try again.");
+      } else {
+        setError("An unexpected error occurred.");
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: 0.2 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 },
+  };
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-50 to-gray-200 p-4">
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="w-full max-w-md space-y-8"
       >
-        <h1 className="text-3xl font-bold text-center text-gray-900">
-          Sign In
-        </h1>
-        <p className="text-center text-gray-600">
-          Access your Admin or Agent Dashboard
-        </p>
+        <motion.div variants={itemVariants} className="text-center">
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+            Welcome Back
+          </h1>
+          <p className="mt-2 text-gray-600">
+            Sign in to access your dashboard.
+          </p>
+        </motion.div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label
-              htmlFor="email"
-              className="text-sm font-medium text-gray-700"
-            >
-              Email address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div>
+        <motion.div
+          variants={itemVariants}
+          className="rounded-xl bg-white/80 p-8 shadow-2xl backdrop-blur-lg"
+        >
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label
+                htmlFor="email"
+                className="text-sm font-medium text-gray-700"
+              >
+                Email address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 bg-white/50 px-3 py-2 shadow-sm transition-shadow focus:border-indigo-500 focus:ring-indigo-500 focus:shadow-md"
+              />
+            </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </div>
+            <div>
+              <label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-700"
+              >
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 bg-white/50 px-3 py-2 shadow-sm transition-shadow focus:border-indigo-500 focus:ring-indigo-500 focus:shadow-md"
+              />
+            </div>
 
-          {error && (
-            <p className="text-sm text-center text-red-600">{error}</p>
-          )}
+            {error && (
+              <motion.p
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-sm text-center text-red-600"
+              >
+                {error}
+              </motion.p>
+            )}
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 disabled:cursor-not-allowed"
-            >
-              {loading ? "Signing In..." : "Sign In"}
-            </button>
-          </div>
-        </form>
+            <div>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                disabled={loading}
+                className="flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-indigo-400"
+              >
+                <FiLogIn />
+                {loading ? "Signing In..." : "Sign In"}
+              </motion.button>
+            </div>
+          </form>
+        </motion.div>
       </motion.div>
     </div>
   );
