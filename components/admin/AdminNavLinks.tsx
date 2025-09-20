@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FiGrid, FiUsers, FiSettings } from "react-icons/fi";
+import { FiGrid, FiUsers, FiSettings, FiFileText } from "react-icons/fi";
 import { motion } from "framer-motion";
 
 // Define your navigation links here
 const navLinks = [
   { name: "Dashboard", href: "/admin/dashboard", icon: FiGrid },
+  // ADD THIS NEW LINK
+  { name: "Manage Referrals", href: "/admin/referrals", icon: FiFileText },
   { name: "Agents", href: "/admin/agents", icon: FiUsers },
   { name: "Settings", href: "/admin/settings", icon: FiSettings },
 ];

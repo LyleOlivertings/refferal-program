@@ -4,8 +4,6 @@ import connectMongoDB from "./mongodb";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 
-
-// Your existing authOptions are now placed inside the NextAuth() call
 export const { 
   handlers: { GET, POST }, 
   auth, 
@@ -37,7 +35,6 @@ export const {
           return null;
         }
 
-        // Return user object without the password
         return { id: user._id.toString(), email: user.email, name: user.name, role: user.role };
       },
     }),
@@ -66,24 +63,6 @@ export const {
       }
       return session;
     },
-    // --- REPLACE the old redirect callback with this one ---
-    redirect: async ({ url, token, baseUrl }) => {
-      // url is the intended redirect URL, baseUrl is the base URL of the app
-      
-      // If the user is authenticated (token exists), decide where they should go
-      if (token) {
-        if (token.role === 'admin') {
-          return `${baseUrl}/admin/dashboard`;
-        }
-        if (token.role === 'agent') {
-          return `${baseUrl}/agent/dashboard`;
-        }
-      }
-
-      // If there's no token (e.g., on sign-out) or no specific role redirect,
-      // check if the user was trying to go somewhere specific.
-      // Otherwise, fall back to the login page.
-      return url.startsWith(baseUrl) ? url : baseUrl + '/login';
-    },
+    // The redirect callback has been removed.
   },
 });
